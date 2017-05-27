@@ -14,14 +14,16 @@ namespace servidor3
         {
             var processor = new ClienteServidor.ClienteServidor.Processor(new Handler());
             var serverTransport = new TServerSocket(9090);
-            var server = new TThreadPoolServer(processor, serverTransport);
+            var server = new TThreadPoolServer(processor, serverTransport);// Use this for a multithreaded server!!
 
-            //TServer server = new TSimpleServer(processor, serverTransport);
+            //TServer server = new TSimpleServer(processor, serverTransport); // Use this for a simplethreaded server!!
 
-            // Use this for a multithreaded server
 
-            Console.WriteLine("Starting the server...");
+            Console.WriteLine("Inicializando o servidor...");
+            Console.WriteLine("Servidor Inicializado :D");
+
             server.Serve();
+            
         }
     }
 }
