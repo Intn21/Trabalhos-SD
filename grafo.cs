@@ -63,9 +63,7 @@ namespace ClienteServidor
     }
 
     public grafo() {
-            this.ListaVertices = new List<vertice>();
-            this.ListaAresta = new List<aresta>();
-        }
+    }
 
     public void Read (TProtocol iprot)
     {

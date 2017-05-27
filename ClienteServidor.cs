@@ -21,15 +21,15 @@ namespace ClienteServidor
     public interface ISync {
       bool insereVertice(int nome, int cor, string descricao, double peso);
       bool removeVertice(int nomeVertice);
-      bool modificaVertice(vertice v);
+      bool modificaVertice(int nome, int cor, string descricao, double peso);
       vertice lerVertice(int nome);
       List<vertice> getVertices(aresta E);
-      List<vertice> getVizinhos(vertice v);
+      List<vertice> getVizinhos(int nome);
       bool insereAresta(int v1, int v2, double peso, bool direcionado, string descricao);
-      bool removeAresta(aresta a);
-      bool modificaAresta(aresta a);
+      bool removeAresta(int v1, int v2);
+      bool modificaAresta(int v1, int v2, double peso, bool direcionado, string descricao);
       aresta lerAresta(int v1, int v2);
-      List<aresta> getArestas(vertice V);
+      List<aresta> getArestas(int vertice);
     }
 
     public interface Iface : ISync {
@@ -42,7 +42,7 @@ namespace ClienteServidor
       bool End_removeVertice(IAsyncResult asyncResult);
       #endif
       #if SILVERLIGHT
-      IAsyncResult Begin_modificaVertice(AsyncCallback callback, object state, vertice v);
+      IAsyncResult Begin_modificaVertice(AsyncCallback callback, object state, int nome, int cor, string descricao, double peso);
       bool End_modificaVertice(IAsyncResult asyncResult);
       #endif
       #if SILVERLIGHT
@@ -54,7 +54,7 @@ namespace ClienteServidor
       List<vertice> End_getVertices(IAsyncResult asyncResult);
       #endif
       #if SILVERLIGHT
-      IAsyncResult Begin_getVizinhos(AsyncCallback callback, object state, vertice v);
+      IAsyncResult Begin_getVizinhos(AsyncCallback callback, object state, int nome);
       List<vertice> End_getVizinhos(IAsyncResult asyncResult);
       #endif
       #if SILVERLIGHT
@@ -62,11 +62,11 @@ namespace ClienteServidor
       bool End_insereAresta(IAsyncResult asyncResult);
       #endif
       #if SILVERLIGHT
-      IAsyncResult Begin_removeAresta(AsyncCallback callback, object state, aresta a);
+      IAsyncResult Begin_removeAresta(AsyncCallback callback, object state, int v1, int v2);
       bool End_removeAresta(IAsyncResult asyncResult);
       #endif
       #if SILVERLIGHT
-      IAsyncResult Begin_modificaAresta(AsyncCallback callback, object state, aresta a);
+      IAsyncResult Begin_modificaAresta(AsyncCallback callback, object state, int v1, int v2, double peso, bool direcionado, string descricao);
       bool End_modificaAresta(IAsyncResult asyncResult);
       #endif
       #if SILVERLIGHT
@@ -74,7 +74,7 @@ namespace ClienteServidor
       aresta End_lerAresta(IAsyncResult asyncResult);
       #endif
       #if SILVERLIGHT
-      IAsyncResult Begin_getArestas(AsyncCallback callback, object state, vertice V);
+      IAsyncResult Begin_getArestas(AsyncCallback callback, object state, int vertice);
       List<aresta> End_getArestas(IAsyncResult asyncResult);
       #endif
     }
@@ -181,7 +181,7 @@ namespace ClienteServidor
         #else
         oprot_.Transport.Flush();
         #endif
-      } 
+      }
 
       public bool recv_insereVertice()
       {
@@ -264,9 +264,9 @@ namespace ClienteServidor
 
       
       #if SILVERLIGHT
-      public IAsyncResult Begin_modificaVertice(AsyncCallback callback, object state, vertice v)
+      public IAsyncResult Begin_modificaVertice(AsyncCallback callback, object state, int nome, int cor, string descricao, double peso)
       {
-        return send_modificaVertice(callback, state, v);
+        return send_modificaVertice(callback, state, nome, cor, descricao, peso);
       }
 
       public bool End_modificaVertice(IAsyncResult asyncResult)
@@ -277,27 +277,30 @@ namespace ClienteServidor
 
       #endif
 
-      public bool modificaVertice(vertice v)
+      public bool modificaVertice(int nome, int cor, string descricao, double peso)
       {
         #if !SILVERLIGHT
-        send_modificaVertice(v);
+        send_modificaVertice(nome, cor, descricao, peso);
         return recv_modificaVertice();
 
         #else
-        var asyncResult = Begin_modificaVertice(null, null, v);
+        var asyncResult = Begin_modificaVertice(null, null, nome, cor, descricao, peso);
         return End_modificaVertice(asyncResult);
 
         #endif
       }
       #if SILVERLIGHT
-      public IAsyncResult send_modificaVertice(AsyncCallback callback, object state, vertice v)
+      public IAsyncResult send_modificaVertice(AsyncCallback callback, object state, int nome, int cor, string descricao, double peso)
       #else
-      public void send_modificaVertice(vertice v)
+      public void send_modificaVertice(int nome, int cor, string descricao, double peso)
       #endif
       {
         oprot_.WriteMessageBegin(new TMessage("modificaVertice", TMessageType.Call, seqid_));
         modificaVertice_args args = new modificaVertice_args();
-        args.V = v;
+        args.Nome = nome;
+        args.Cor = cor;
+        args.Descricao = descricao;
+        args.Peso = peso;
         args.Write(oprot_);
         oprot_.WriteMessageEnd();
         #if SILVERLIGHT
@@ -450,9 +453,9 @@ namespace ClienteServidor
 
       
       #if SILVERLIGHT
-      public IAsyncResult Begin_getVizinhos(AsyncCallback callback, object state, vertice v)
+      public IAsyncResult Begin_getVizinhos(AsyncCallback callback, object state, int nome)
       {
-        return send_getVizinhos(callback, state, v);
+        return send_getVizinhos(callback, state, nome);
       }
 
       public List<vertice> End_getVizinhos(IAsyncResult asyncResult)
@@ -463,27 +466,27 @@ namespace ClienteServidor
 
       #endif
 
-      public List<vertice> getVizinhos(vertice v)
+      public List<vertice> getVizinhos(int nome)
       {
         #if !SILVERLIGHT
-        send_getVizinhos(v);
+        send_getVizinhos(nome);
         return recv_getVizinhos();
 
         #else
-        var asyncResult = Begin_getVizinhos(null, null, v);
+        var asyncResult = Begin_getVizinhos(null, null, nome);
         return End_getVizinhos(asyncResult);
 
         #endif
       }
       #if SILVERLIGHT
-      public IAsyncResult send_getVizinhos(AsyncCallback callback, object state, vertice v)
+      public IAsyncResult send_getVizinhos(AsyncCallback callback, object state, int nome)
       #else
-      public void send_getVizinhos(vertice v)
+      public void send_getVizinhos(int nome)
       #endif
       {
         oprot_.WriteMessageBegin(new TMessage("getVizinhos", TMessageType.Call, seqid_));
         getVizinhos_args args = new getVizinhos_args();
-        args.V = v;
+        args.Nome = nome;
         args.Write(oprot_);
         oprot_.WriteMessageEnd();
         #if SILVERLIGHT
@@ -578,9 +581,9 @@ namespace ClienteServidor
 
       
       #if SILVERLIGHT
-      public IAsyncResult Begin_removeAresta(AsyncCallback callback, object state, aresta a)
+      public IAsyncResult Begin_removeAresta(AsyncCallback callback, object state, int v1, int v2)
       {
-        return send_removeAresta(callback, state, a);
+        return send_removeAresta(callback, state, v1, v2);
       }
 
       public bool End_removeAresta(IAsyncResult asyncResult)
@@ -591,27 +594,28 @@ namespace ClienteServidor
 
       #endif
 
-      public bool removeAresta(aresta a)
+      public bool removeAresta(int v1, int v2)
       {
         #if !SILVERLIGHT
-        send_removeAresta(a);
+        send_removeAresta(v1, v2);
         return recv_removeAresta();
 
         #else
-        var asyncResult = Begin_removeAresta(null, null, a);
+        var asyncResult = Begin_removeAresta(null, null, v1, v2);
         return End_removeAresta(asyncResult);
 
         #endif
       }
       #if SILVERLIGHT
-      public IAsyncResult send_removeAresta(AsyncCallback callback, object state, aresta a)
+      public IAsyncResult send_removeAresta(AsyncCallback callback, object state, int v1, int v2)
       #else
-      public void send_removeAresta(aresta a)
+      public void send_removeAresta(int v1, int v2)
       #endif
       {
         oprot_.WriteMessageBegin(new TMessage("removeAresta", TMessageType.Call, seqid_));
         removeAresta_args args = new removeAresta_args();
-        args.A = a;
+        args.V1 = v1;
+        args.V2 = v2;
         args.Write(oprot_);
         oprot_.WriteMessageEnd();
         #if SILVERLIGHT
@@ -640,9 +644,9 @@ namespace ClienteServidor
 
       
       #if SILVERLIGHT
-      public IAsyncResult Begin_modificaAresta(AsyncCallback callback, object state, aresta a)
+      public IAsyncResult Begin_modificaAresta(AsyncCallback callback, object state, int v1, int v2, double peso, bool direcionado, string descricao)
       {
-        return send_modificaAresta(callback, state, a);
+        return send_modificaAresta(callback, state, v1, v2, peso, direcionado, descricao);
       }
 
       public bool End_modificaAresta(IAsyncResult asyncResult)
@@ -653,27 +657,31 @@ namespace ClienteServidor
 
       #endif
 
-      public bool modificaAresta(aresta a)
+      public bool modificaAresta(int v1, int v2, double peso, bool direcionado, string descricao)
       {
         #if !SILVERLIGHT
-        send_modificaAresta(a);
+        send_modificaAresta(v1, v2, peso, direcionado, descricao);
         return recv_modificaAresta();
 
         #else
-        var asyncResult = Begin_modificaAresta(null, null, a);
+        var asyncResult = Begin_modificaAresta(null, null, v1, v2, peso, direcionado, descricao);
         return End_modificaAresta(asyncResult);
 
         #endif
       }
       #if SILVERLIGHT
-      public IAsyncResult send_modificaAresta(AsyncCallback callback, object state, aresta a)
+      public IAsyncResult send_modificaAresta(AsyncCallback callback, object state, int v1, int v2, double peso, bool direcionado, string descricao)
       #else
-      public void send_modificaAresta(aresta a)
+      public void send_modificaAresta(int v1, int v2, double peso, bool direcionado, string descricao)
       #endif
       {
         oprot_.WriteMessageBegin(new TMessage("modificaAresta", TMessageType.Call, seqid_));
         modificaAresta_args args = new modificaAresta_args();
-        args.A = a;
+        args.V1 = v1;
+        args.V2 = v2;
+        args.Peso = peso;
+        args.Direcionado = direcionado;
+        args.Descricao = descricao;
         args.Write(oprot_);
         oprot_.WriteMessageEnd();
         #if SILVERLIGHT
@@ -765,9 +773,9 @@ namespace ClienteServidor
 
       
       #if SILVERLIGHT
-      public IAsyncResult Begin_getArestas(AsyncCallback callback, object state, vertice V)
+      public IAsyncResult Begin_getArestas(AsyncCallback callback, object state, int vertice)
       {
-        return send_getArestas(callback, state, V);
+        return send_getArestas(callback, state, vertice);
       }
 
       public List<aresta> End_getArestas(IAsyncResult asyncResult)
@@ -778,27 +786,27 @@ namespace ClienteServidor
 
       #endif
 
-      public List<aresta> getArestas(vertice V)
+      public List<aresta> getArestas(int vertice)
       {
         #if !SILVERLIGHT
-        send_getArestas(V);
+        send_getArestas(vertice);
         return recv_getArestas();
 
         #else
-        var asyncResult = Begin_getArestas(null, null, V);
+        var asyncResult = Begin_getArestas(null, null, vertice);
         return End_getArestas(asyncResult);
 
         #endif
       }
       #if SILVERLIGHT
-      public IAsyncResult send_getArestas(AsyncCallback callback, object state, vertice V)
+      public IAsyncResult send_getArestas(AsyncCallback callback, object state, int vertice)
       #else
-      public void send_getArestas(vertice V)
+      public void send_getArestas(int vertice)
       #endif
       {
         oprot_.WriteMessageBegin(new TMessage("getArestas", TMessageType.Call, seqid_));
         getArestas_args args = new getArestas_args();
-        args.V = V;
+        args.Vertice = vertice;
         args.Write(oprot_);
         oprot_.WriteMessageEnd();
         #if SILVERLIGHT
@@ -937,7 +945,7 @@ namespace ClienteServidor
         modificaVertice_result result = new modificaVertice_result();
         try
         {
-          result.Success = iface_.modificaVertice(args.V);
+          result.Success = iface_.modificaVertice(args.Nome, args.Cor, args.Descricao, args.Peso);
           oprot.WriteMessageBegin(new TMessage("modificaVertice", TMessageType.Reply, seqid)); 
           result.Write(oprot);
         }
@@ -1021,7 +1029,7 @@ namespace ClienteServidor
         getVizinhos_result result = new getVizinhos_result();
         try
         {
-          result.Success = iface_.getVizinhos(args.V);
+          result.Success = iface_.getVizinhos(args.Nome);
           oprot.WriteMessageBegin(new TMessage("getVizinhos", TMessageType.Reply, seqid)); 
           result.Write(oprot);
         }
@@ -1077,7 +1085,7 @@ namespace ClienteServidor
         removeAresta_result result = new removeAresta_result();
         try
         {
-          result.Success = iface_.removeAresta(args.A);
+          result.Success = iface_.removeAresta(args.V1, args.V2);
           oprot.WriteMessageBegin(new TMessage("removeAresta", TMessageType.Reply, seqid)); 
           result.Write(oprot);
         }
@@ -1105,7 +1113,7 @@ namespace ClienteServidor
         modificaAresta_result result = new modificaAresta_result();
         try
         {
-          result.Success = iface_.modificaAresta(args.A);
+          result.Success = iface_.modificaAresta(args.V1, args.V2, args.Peso, args.Direcionado, args.Descricao);
           oprot.WriteMessageBegin(new TMessage("modificaAresta", TMessageType.Reply, seqid)); 
           result.Write(oprot);
         }
@@ -1161,7 +1169,7 @@ namespace ClienteServidor
         getArestas_result result = new getArestas_result();
         try
         {
-          result.Success = iface_.getArestas(args.V);
+          result.Success = iface_.getArestas(args.Vertice);
           oprot.WriteMessageBegin(new TMessage("getArestas", TMessageType.Reply, seqid)); 
           result.Write(oprot);
         }
@@ -1731,18 +1739,60 @@ namespace ClienteServidor
     #endif
     public partial class modificaVertice_args : TBase
     {
-      private vertice _v;
+      private int _nome;
+      private int _cor;
+      private string _descricao;
+      private double _peso;
 
-      public vertice V
+      public int Nome
       {
         get
         {
-          return _v;
+          return _nome;
         }
         set
         {
-          __isset.v = true;
-          this._v = value;
+          __isset.nome = true;
+          this._nome = value;
+        }
+      }
+
+      public int Cor
+      {
+        get
+        {
+          return _cor;
+        }
+        set
+        {
+          __isset.cor = true;
+          this._cor = value;
+        }
+      }
+
+      public string Descricao
+      {
+        get
+        {
+          return _descricao;
+        }
+        set
+        {
+          __isset.descricao = true;
+          this._descricao = value;
+        }
+      }
+
+      public double Peso
+      {
+        get
+        {
+          return _peso;
+        }
+        set
+        {
+          __isset.peso = true;
+          this._peso = value;
         }
       }
 
@@ -1752,7 +1802,10 @@ namespace ClienteServidor
       [Serializable]
       #endif
       public struct Isset {
-        public bool v;
+        public bool nome;
+        public bool cor;
+        public bool descricao;
+        public bool peso;
       }
 
       public modificaVertice_args() {
@@ -1774,9 +1827,29 @@ namespace ClienteServidor
             switch (field.ID)
             {
               case 1:
-                if (field.Type == TType.Struct) {
-                  V = new vertice();
-                  V.Read(iprot);
+                if (field.Type == TType.I32) {
+                  Nome = iprot.ReadI32();
+                } else { 
+                  TProtocolUtil.Skip(iprot, field.Type);
+                }
+                break;
+              case 2:
+                if (field.Type == TType.I32) {
+                  Cor = iprot.ReadI32();
+                } else { 
+                  TProtocolUtil.Skip(iprot, field.Type);
+                }
+                break;
+              case 3:
+                if (field.Type == TType.String) {
+                  Descricao = iprot.ReadString();
+                } else { 
+                  TProtocolUtil.Skip(iprot, field.Type);
+                }
+                break;
+              case 4:
+                if (field.Type == TType.Double) {
+                  Peso = iprot.ReadDouble();
                 } else { 
                   TProtocolUtil.Skip(iprot, field.Type);
                 }
@@ -1802,12 +1875,36 @@ namespace ClienteServidor
           TStruct struc = new TStruct("modificaVertice_args");
           oprot.WriteStructBegin(struc);
           TField field = new TField();
-          if (V != null && __isset.v) {
-            field.Name = "v";
-            field.Type = TType.Struct;
+          if (__isset.nome) {
+            field.Name = "nome";
+            field.Type = TType.I32;
             field.ID = 1;
             oprot.WriteFieldBegin(field);
-            V.Write(oprot);
+            oprot.WriteI32(Nome);
+            oprot.WriteFieldEnd();
+          }
+          if (__isset.cor) {
+            field.Name = "cor";
+            field.Type = TType.I32;
+            field.ID = 2;
+            oprot.WriteFieldBegin(field);
+            oprot.WriteI32(Cor);
+            oprot.WriteFieldEnd();
+          }
+          if (Descricao != null && __isset.descricao) {
+            field.Name = "descricao";
+            field.Type = TType.String;
+            field.ID = 3;
+            oprot.WriteFieldBegin(field);
+            oprot.WriteString(Descricao);
+            oprot.WriteFieldEnd();
+          }
+          if (__isset.peso) {
+            field.Name = "peso";
+            field.Type = TType.Double;
+            field.ID = 4;
+            oprot.WriteFieldBegin(field);
+            oprot.WriteDouble(Peso);
             oprot.WriteFieldEnd();
           }
           oprot.WriteFieldStop();
@@ -1822,11 +1919,29 @@ namespace ClienteServidor
       public override string ToString() {
         StringBuilder __sb = new StringBuilder("modificaVertice_args(");
         bool __first = true;
-        if (V != null && __isset.v) {
+        if (__isset.nome) {
           if(!__first) { __sb.Append(", "); }
           __first = false;
-          __sb.Append("V: ");
-          __sb.Append(V== null ? "<null>" : V.ToString());
+          __sb.Append("Nome: ");
+          __sb.Append(Nome);
+        }
+        if (__isset.cor) {
+          if(!__first) { __sb.Append(", "); }
+          __first = false;
+          __sb.Append("Cor: ");
+          __sb.Append(Cor);
+        }
+        if (Descricao != null && __isset.descricao) {
+          if(!__first) { __sb.Append(", "); }
+          __first = false;
+          __sb.Append("Descricao: ");
+          __sb.Append(Descricao);
+        }
+        if (__isset.peso) {
+          if(!__first) { __sb.Append(", "); }
+          __first = false;
+          __sb.Append("Peso: ");
+          __sb.Append(Peso);
         }
         __sb.Append(")");
         return __sb.ToString();
@@ -2407,18 +2522,18 @@ namespace ClienteServidor
     #endif
     public partial class getVizinhos_args : TBase
     {
-      private vertice _v;
+      private int _nome;
 
-      public vertice V
+      public int Nome
       {
         get
         {
-          return _v;
+          return _nome;
         }
         set
         {
-          __isset.v = true;
-          this._v = value;
+          __isset.nome = true;
+          this._nome = value;
         }
       }
 
@@ -2428,7 +2543,7 @@ namespace ClienteServidor
       [Serializable]
       #endif
       public struct Isset {
-        public bool v;
+        public bool nome;
       }
 
       public getVizinhos_args() {
@@ -2450,9 +2565,8 @@ namespace ClienteServidor
             switch (field.ID)
             {
               case 1:
-                if (field.Type == TType.Struct) {
-                  V = new vertice();
-                  V.Read(iprot);
+                if (field.Type == TType.I32) {
+                  Nome = iprot.ReadI32();
                 } else { 
                   TProtocolUtil.Skip(iprot, field.Type);
                 }
@@ -2478,12 +2592,12 @@ namespace ClienteServidor
           TStruct struc = new TStruct("getVizinhos_args");
           oprot.WriteStructBegin(struc);
           TField field = new TField();
-          if (V != null && __isset.v) {
-            field.Name = "v";
-            field.Type = TType.Struct;
+          if (__isset.nome) {
+            field.Name = "nome";
+            field.Type = TType.I32;
             field.ID = 1;
             oprot.WriteFieldBegin(field);
-            V.Write(oprot);
+            oprot.WriteI32(Nome);
             oprot.WriteFieldEnd();
           }
           oprot.WriteFieldStop();
@@ -2498,11 +2612,11 @@ namespace ClienteServidor
       public override string ToString() {
         StringBuilder __sb = new StringBuilder("getVizinhos_args(");
         bool __first = true;
-        if (V != null && __isset.v) {
+        if (__isset.nome) {
           if(!__first) { __sb.Append(", "); }
           __first = false;
-          __sb.Append("V: ");
-          __sb.Append(V== null ? "<null>" : V.ToString());
+          __sb.Append("Nome: ");
+          __sb.Append(Nome);
         }
         __sb.Append(")");
         return __sb.ToString();
@@ -3006,18 +3120,32 @@ namespace ClienteServidor
     #endif
     public partial class removeAresta_args : TBase
     {
-      private aresta _a;
+      private int _v1;
+      private int _v2;
 
-      public aresta A
+      public int V1
       {
         get
         {
-          return _a;
+          return _v1;
         }
         set
         {
-          __isset.a = true;
-          this._a = value;
+          __isset.v1 = true;
+          this._v1 = value;
+        }
+      }
+
+      public int V2
+      {
+        get
+        {
+          return _v2;
+        }
+        set
+        {
+          __isset.v2 = true;
+          this._v2 = value;
         }
       }
 
@@ -3027,7 +3155,8 @@ namespace ClienteServidor
       [Serializable]
       #endif
       public struct Isset {
-        public bool a;
+        public bool v1;
+        public bool v2;
       }
 
       public removeAresta_args() {
@@ -3049,9 +3178,15 @@ namespace ClienteServidor
             switch (field.ID)
             {
               case 1:
-                if (field.Type == TType.Struct) {
-                  A = new aresta();
-                  A.Read(iprot);
+                if (field.Type == TType.I32) {
+                  V1 = iprot.ReadI32();
+                } else { 
+                  TProtocolUtil.Skip(iprot, field.Type);
+                }
+                break;
+              case 2:
+                if (field.Type == TType.I32) {
+                  V2 = iprot.ReadI32();
                 } else { 
                   TProtocolUtil.Skip(iprot, field.Type);
                 }
@@ -3077,12 +3212,20 @@ namespace ClienteServidor
           TStruct struc = new TStruct("removeAresta_args");
           oprot.WriteStructBegin(struc);
           TField field = new TField();
-          if (A != null && __isset.a) {
-            field.Name = "a";
-            field.Type = TType.Struct;
+          if (__isset.v1) {
+            field.Name = "v1";
+            field.Type = TType.I32;
             field.ID = 1;
             oprot.WriteFieldBegin(field);
-            A.Write(oprot);
+            oprot.WriteI32(V1);
+            oprot.WriteFieldEnd();
+          }
+          if (__isset.v2) {
+            field.Name = "v2";
+            field.Type = TType.I32;
+            field.ID = 2;
+            oprot.WriteFieldBegin(field);
+            oprot.WriteI32(V2);
             oprot.WriteFieldEnd();
           }
           oprot.WriteFieldStop();
@@ -3097,11 +3240,17 @@ namespace ClienteServidor
       public override string ToString() {
         StringBuilder __sb = new StringBuilder("removeAresta_args(");
         bool __first = true;
-        if (A != null && __isset.a) {
+        if (__isset.v1) {
           if(!__first) { __sb.Append(", "); }
           __first = false;
-          __sb.Append("A: ");
-          __sb.Append(A== null ? "<null>" : A.ToString());
+          __sb.Append("V1: ");
+          __sb.Append(V1);
+        }
+        if (__isset.v2) {
+          if(!__first) { __sb.Append(", "); }
+          __first = false;
+          __sb.Append("V2: ");
+          __sb.Append(V2);
         }
         __sb.Append(")");
         return __sb.ToString();
@@ -3224,18 +3373,74 @@ namespace ClienteServidor
     #endif
     public partial class modificaAresta_args : TBase
     {
-      private aresta _a;
+      private int _v1;
+      private int _v2;
+      private double _peso;
+      private bool _direcionado;
+      private string _descricao;
 
-      public aresta A
+      public int V1
       {
         get
         {
-          return _a;
+          return _v1;
         }
         set
         {
-          __isset.a = true;
-          this._a = value;
+          __isset.v1 = true;
+          this._v1 = value;
+        }
+      }
+
+      public int V2
+      {
+        get
+        {
+          return _v2;
+        }
+        set
+        {
+          __isset.v2 = true;
+          this._v2 = value;
+        }
+      }
+
+      public double Peso
+      {
+        get
+        {
+          return _peso;
+        }
+        set
+        {
+          __isset.peso = true;
+          this._peso = value;
+        }
+      }
+
+      public bool Direcionado
+      {
+        get
+        {
+          return _direcionado;
+        }
+        set
+        {
+          __isset.direcionado = true;
+          this._direcionado = value;
+        }
+      }
+
+      public string Descricao
+      {
+        get
+        {
+          return _descricao;
+        }
+        set
+        {
+          __isset.descricao = true;
+          this._descricao = value;
         }
       }
 
@@ -3245,7 +3450,11 @@ namespace ClienteServidor
       [Serializable]
       #endif
       public struct Isset {
-        public bool a;
+        public bool v1;
+        public bool v2;
+        public bool peso;
+        public bool direcionado;
+        public bool descricao;
       }
 
       public modificaAresta_args() {
@@ -3267,9 +3476,36 @@ namespace ClienteServidor
             switch (field.ID)
             {
               case 1:
-                if (field.Type == TType.Struct) {
-                  A = new aresta();
-                  A.Read(iprot);
+                if (field.Type == TType.I32) {
+                  V1 = iprot.ReadI32();
+                } else { 
+                  TProtocolUtil.Skip(iprot, field.Type);
+                }
+                break;
+              case 2:
+                if (field.Type == TType.I32) {
+                  V2 = iprot.ReadI32();
+                } else { 
+                  TProtocolUtil.Skip(iprot, field.Type);
+                }
+                break;
+              case 3:
+                if (field.Type == TType.Double) {
+                  Peso = iprot.ReadDouble();
+                } else { 
+                  TProtocolUtil.Skip(iprot, field.Type);
+                }
+                break;
+              case 4:
+                if (field.Type == TType.Bool) {
+                  Direcionado = iprot.ReadBool();
+                } else { 
+                  TProtocolUtil.Skip(iprot, field.Type);
+                }
+                break;
+              case 5:
+                if (field.Type == TType.String) {
+                  Descricao = iprot.ReadString();
                 } else { 
                   TProtocolUtil.Skip(iprot, field.Type);
                 }
@@ -3295,12 +3531,44 @@ namespace ClienteServidor
           TStruct struc = new TStruct("modificaAresta_args");
           oprot.WriteStructBegin(struc);
           TField field = new TField();
-          if (A != null && __isset.a) {
-            field.Name = "a";
-            field.Type = TType.Struct;
+          if (__isset.v1) {
+            field.Name = "v1";
+            field.Type = TType.I32;
             field.ID = 1;
             oprot.WriteFieldBegin(field);
-            A.Write(oprot);
+            oprot.WriteI32(V1);
+            oprot.WriteFieldEnd();
+          }
+          if (__isset.v2) {
+            field.Name = "v2";
+            field.Type = TType.I32;
+            field.ID = 2;
+            oprot.WriteFieldBegin(field);
+            oprot.WriteI32(V2);
+            oprot.WriteFieldEnd();
+          }
+          if (__isset.peso) {
+            field.Name = "peso";
+            field.Type = TType.Double;
+            field.ID = 3;
+            oprot.WriteFieldBegin(field);
+            oprot.WriteDouble(Peso);
+            oprot.WriteFieldEnd();
+          }
+          if (__isset.direcionado) {
+            field.Name = "direcionado";
+            field.Type = TType.Bool;
+            field.ID = 4;
+            oprot.WriteFieldBegin(field);
+            oprot.WriteBool(Direcionado);
+            oprot.WriteFieldEnd();
+          }
+          if (Descricao != null && __isset.descricao) {
+            field.Name = "descricao";
+            field.Type = TType.String;
+            field.ID = 5;
+            oprot.WriteFieldBegin(field);
+            oprot.WriteString(Descricao);
             oprot.WriteFieldEnd();
           }
           oprot.WriteFieldStop();
@@ -3315,11 +3583,35 @@ namespace ClienteServidor
       public override string ToString() {
         StringBuilder __sb = new StringBuilder("modificaAresta_args(");
         bool __first = true;
-        if (A != null && __isset.a) {
+        if (__isset.v1) {
           if(!__first) { __sb.Append(", "); }
           __first = false;
-          __sb.Append("A: ");
-          __sb.Append(A== null ? "<null>" : A.ToString());
+          __sb.Append("V1: ");
+          __sb.Append(V1);
+        }
+        if (__isset.v2) {
+          if(!__first) { __sb.Append(", "); }
+          __first = false;
+          __sb.Append("V2: ");
+          __sb.Append(V2);
+        }
+        if (__isset.peso) {
+          if(!__first) { __sb.Append(", "); }
+          __first = false;
+          __sb.Append("Peso: ");
+          __sb.Append(Peso);
+        }
+        if (__isset.direcionado) {
+          if(!__first) { __sb.Append(", "); }
+          __first = false;
+          __sb.Append("Direcionado: ");
+          __sb.Append(Direcionado);
+        }
+        if (Descricao != null && __isset.descricao) {
+          if(!__first) { __sb.Append(", "); }
+          __first = false;
+          __sb.Append("Descricao: ");
+          __sb.Append(Descricao);
         }
         __sb.Append(")");
         return __sb.ToString();
@@ -3698,18 +3990,18 @@ namespace ClienteServidor
     #endif
     public partial class getArestas_args : TBase
     {
-      private vertice _V;
+      private int _vertice;
 
-      public vertice V
+      public int Vertice
       {
         get
         {
-          return _V;
+          return _vertice;
         }
         set
         {
-          __isset.V = true;
-          this._V = value;
+          __isset.vertice = true;
+          this._vertice = value;
         }
       }
 
@@ -3719,7 +4011,7 @@ namespace ClienteServidor
       [Serializable]
       #endif
       public struct Isset {
-        public bool V;
+        public bool vertice;
       }
 
       public getArestas_args() {
@@ -3741,9 +4033,8 @@ namespace ClienteServidor
             switch (field.ID)
             {
               case 1:
-                if (field.Type == TType.Struct) {
-                  V = new vertice();
-                  V.Read(iprot);
+                if (field.Type == TType.I32) {
+                  Vertice = iprot.ReadI32();
                 } else { 
                   TProtocolUtil.Skip(iprot, field.Type);
                 }
@@ -3769,12 +4060,12 @@ namespace ClienteServidor
           TStruct struc = new TStruct("getArestas_args");
           oprot.WriteStructBegin(struc);
           TField field = new TField();
-          if (V != null && __isset.V) {
-            field.Name = "V";
-            field.Type = TType.Struct;
+          if (__isset.vertice) {
+            field.Name = "vertice";
+            field.Type = TType.I32;
             field.ID = 1;
             oprot.WriteFieldBegin(field);
-            V.Write(oprot);
+            oprot.WriteI32(Vertice);
             oprot.WriteFieldEnd();
           }
           oprot.WriteFieldStop();
@@ -3789,11 +4080,11 @@ namespace ClienteServidor
       public override string ToString() {
         StringBuilder __sb = new StringBuilder("getArestas_args(");
         bool __first = true;
-        if (V != null && __isset.V) {
+        if (__isset.vertice) {
           if(!__first) { __sb.Append(", "); }
           __first = false;
-          __sb.Append("V: ");
-          __sb.Append(V== null ? "<null>" : V.ToString());
+          __sb.Append("Vertice: ");
+          __sb.Append(Vertice);
         }
         __sb.Append(")");
         return __sb.ToString();
